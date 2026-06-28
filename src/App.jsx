@@ -571,8 +571,8 @@ export default function WorldCupBI() {
             {/* Score cards top 6 */}
             <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:12, marginBottom:14 }}>
               {filtered2026.slice(0,6).map((t, i) => {
-                const score = computeScore(t);
-                const maxScore = computeScore(filtered2026[0]);
+                const maxPts = 1877.32; // pontos do #1 (França)
+                const pct = Math.min((t.fifa_pts / maxPts) * 100, 100);
                 return (
                   <div key={t.team} onClick={()=>setTeamFilter(teamFilter===t.team?"All":t.team)}
                     style={{ background: teamFilter===t.team ? "#1a3a1a" : C.panel, border:`1px solid ${teamFilter===t.team?C.greenLight:C.border}`, borderRadius:12, padding:"16px 18px", cursor:"pointer", transition:"all .2s" }}>
@@ -590,8 +590,12 @@ export default function WorldCupBI() {
                       </div>
                     </div>
 
-                    <div style={{ margin:"14px 0 8px", height:5, background:C.border, borderRadius:3 }}>
-                      <div style={{ height:5, borderRadius:3, background: i===0?C.gold:i<=2?C.greenLight:C.blue, width:`${(score/maxScore)*100}%`, transition:"width .5s" }}/>
+                    <div style={{ margin:"14px 0 4px", display:"flex", justifyContent:"space-between" }}>
+                      <span style={{ fontSize:10, color:C.muted }}>Pontos FIFA</span>
+                      <span style={{ fontSize:10, color:C.gold, fontWeight:700 }}>{t.fifa_pts.toFixed(0)} pts</span>
+                    </div>
+                    <div style={{ height:5, background:C.border, borderRadius:3, marginBottom:10 }}>
+                      <div style={{ height:5, borderRadius:3, background: i===0?C.gold:i<=2?C.greenLight:C.blue, width:`${pct}%`, transition:"width .5s" }}/>
                     </div>
                     <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr 1fr", gap:8, marginTop:10 }}>
                       {[
