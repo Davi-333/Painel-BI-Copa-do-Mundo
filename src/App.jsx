@@ -65,6 +65,33 @@ const FLAGS = {
 
 const FLAG = (t) => FLAGS[t] || "🏳️";
 
+const PAIS_PT = {
+  "France":"França","Spain":"Espanha","Argentina":"Argentina","England":"Inglaterra",
+  "Portugal":"Portugal","Brazil":"Brasil","Netherlands":"Holanda","Morocco":"Marrocos",
+  "Belgium":"Bélgica","Germany":"Alemanha","Croatia":"Croácia","Colombia":"Colômbia",
+  "Senegal":"Senegal","Mexico":"México","United States":"Estados Unidos","Uruguay":"Uruguai",
+  "Japan":"Japão","Algeria":"Argélia","Canada":"Canadá","Italy":"Itália",
+  "West Germany":"Alemanha Ocid.","Hungary":"Hungria","Sweden":"Suécia","Chile":"Chile",
+  "Switzerland":"Suíça","South Africa":"África do Sul","Russia":"Rússia","Qatar":"Catar",
+  "Korea/Japan":"Coreia/Japão","Czechoslovakia":"Tchecoslováquia","Uruguay":"Uruguai",
+  "Korea Republic, Japan":"Coreia/Japão","Saudi Arabia":"Arábia Saudita","Japan":"Japão",
+  "Iran":"Irã","Turkey":"Turquia","Ecuador":"Equador","Austria":"Áustria",
+  "South Korea":"Coreia do Sul","Australia":"Austrália","Egypt":"Egito","Norway":"Noruega",
+  "Panama":"Panamá","Ivory Coast":"Costa do Marfim","Paraguay":"Paraguai",
+  "Czech Republic":"Rep. Tcheca","Scotland":"Escócia","Tunisia":"Tunísia",
+  "DR Congo":"R.D. Congo","Uzbekistan":"Uzbequistão","Iraq":"Iraque",
+  "Jordan":"Jordânia","Bosnia and Herzegovina":"Bósnia e Herz.","Cape Verde":"Cabo Verde",
+  "Ghana":"Gana","New Zealand":"Nova Zelândia","Haiti":"Haiti",
+};
+
+const CONT_PT = {
+  "Europe":"Europa","South America":"América do Sul","Africa":"África",
+  "Asia":"Ásia","North America":"América do Norte","Oceania":"Oceania","All":"Todos",
+};
+
+const T = (name) => PAIS_PT[name] || name;
+const TC = (cont) => CONT_PT[cont] || cont;
+
 const CONTINENT_COLOR = {
   "Europe": "#4a9eff", "South America": "#f9c74f", "Africa": "#43aa8b",
   "Asia": "#f8961e", "North America": "#f94144", "Oceania": "#90be6d"
@@ -146,7 +173,7 @@ export default function WorldCupBI() {
       const c = d.Champion.replace("West Germany", "Germany");
       cnt[c] = (cnt[c] || 0) + 1;
     });
-    return Object.entries(cnt).sort((a,b) => b[1]-a[1]).map(([name, count]) => ({ name:`${FLAG(name)} ${name}`, count }));
+    return Object.entries(cnt).sort((a,b) => b[1]-a[1]).map(([name, count]) => ({ name:`${FLAG(name)} ${T(name)}`, count }));
   }, []);
 
   const attendanceSeries = WC_DATA.map(d => ({ year: d.Year, avg: d.AttendanceAvg, total: Math.round(d.Attendance/1000) }));
@@ -157,7 +184,7 @@ export default function WorldCupBI() {
   });
 
   const goals2026 = TEST_2026.map(t => ({
-    name: `${FLAG(t.team)} ${t.team}`,
+    name: `${FLAG(t.team)} ${T(t.team)}`,
     gols_marcados: t.goals_scored,
     gols_sofridos: t.goals_received,
     saldo: t.goals_scored - t.goals_received,
@@ -289,9 +316,9 @@ export default function WorldCupBI() {
                       <tr key={d.Year} style={{ background: i%2===0?"transparent":C.panelAlt, cursor:"pointer" }}
                         onClick={()=>setSelectedYear(selectedYear===d.Year?null:d.Year)}>
                         <td style={{ padding:"8px 10px", color:C.goldLight, fontWeight:800 }}>{d.Year}</td>
-                        <td style={{ padding:"8px 10px", color:C.muted }}>{FLAG(d.Host)} {d.Host}</td>
-                        <td style={{ padding:"8px 10px", color:C.accent, fontWeight:700 }}>{FLAG(d.Champion)} {d.Champion}</td>
-                        <td style={{ padding:"8px 10px" }}>{FLAG(d.RunnerUp)} {d.RunnerUp}</td>
+                        <td style={{ padding:"8px 10px", color:C.muted }}>{FLAG(d.Host)} {T(d.Host)}</td>
+                        <td style={{ padding:"8px 10px", color:C.accent, fontWeight:700 }}>{FLAG(d.Champion)} {T(d.Champion)}</td>
+                        <td style={{ padding:"8px 10px" }}>{FLAG(d.RunnerUp)} {T(d.RunnerUp)}</td>
                         <td style={{ padding:"8px 10px", color:C.muted, fontSize:11 }}>{d.TopScorer}</td>
                         <td style={{ padding:"8px 10px", textAlign:"center" }}>{d.Matches}</td>
                         <td style={{ padding:"8px 10px", textAlign:"right", color:C.blue }}>{(d.Attendance/1e6).toFixed(2)}M</td>
@@ -474,7 +501,7 @@ export default function WorldCupBI() {
                   ).sort((a,b)=>b[1].length-a[1].length).map(([cont, teams]) => (
                     <div key={cont}>
                       <div style={{ display:"flex", justifyContent:"space-between", marginBottom:4 }}>
-                        <span style={{ color:CONTINENT_COLOR[cont]||C.white, fontWeight:700, fontSize:12 }}>{cont}</span>
+                        <span style={{ color:CONTINENT_COLOR[cont]||C.white, fontWeight:700, fontSize:12 }}>{TC(cont)}</span>
                         <span style={{ color:C.muted, fontSize:11 }}>{teams.length} seleções</span>
                       </div>
                       <div style={{ display:"flex", gap:4, flexWrap:"wrap" }}>
@@ -500,8 +527,8 @@ export default function WorldCupBI() {
                     <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:12 }}>
                       <span style={{ fontSize:32 }}>{FLAG(t.team)}</span>
                       <div>
-                        <div style={{ fontWeight:800, fontSize:14 }}>{t.team}</div>
-                        <div style={{ color:C.muted, fontSize:11 }}>Rank FIFA: #{t.fifa_rank} · {t.continent}</div>
+                        <div style={{ fontWeight:800, fontSize:14 }}>{T(t.team)}</div>
+                        <div style={{ color:C.muted, fontSize:11 }}>Rank FIFA: #{t.fifa_rank} · {TC(t.continent)}</div>
                       </div>
                     </div>
                     {[
@@ -537,7 +564,7 @@ export default function WorldCupBI() {
                   background: continentFilter===c ? (CONTINENT_COLOR[c]||C.gold) : C.border,
                   color: continentFilter===c ? C.bg : C.muted,
                   border:"none", borderRadius:8, padding:"5px 14px", fontSize:12, cursor:"pointer", fontWeight:700
-                }}>{c}</button>
+                }}>{TC(c)}</button>
               ))}
             </div>
 
@@ -553,8 +580,8 @@ export default function WorldCupBI() {
                       <div style={{ display:"flex", alignItems:"center", gap:10 }}>
                         <span style={{ fontSize:34 }}>{FLAG(t.team)}</span>
                         <div>
-                          <div style={{ fontWeight:800, fontSize:14 }}>{t.team}</div>
-                          <div style={{ color:CONTINENT_COLOR[t.continent]||C.muted, fontSize:11, fontWeight:600 }}>{t.continent}</div>
+                          <div style={{ fontWeight:800, fontSize:14 }}>{T(t.team)}</div>
+                          <div style={{ color:CONTINENT_COLOR[t.continent]||C.muted, fontSize:11, fontWeight:600 }}>{TC(t.continent)}</div>
                         </div>
                       </div>
                       <div style={{ textAlign:"right" }}>
@@ -602,8 +629,8 @@ export default function WorldCupBI() {
                       <tr key={t.team} onClick={()=>setTeamFilter(teamFilter===t.team?"All":t.team)}
                         style={{ background: teamFilter===t.team?"#1a3a1a":i%2===0?"transparent":C.panelAlt, cursor:"pointer" }}>
                         <td style={{ padding:"7px 10px", color:i<3?C.gold:C.muted, fontWeight:i<3?900:400 }}>{i+1}</td>
-                        <td style={{ padding:"7px 10px", fontWeight:700 }}>{FLAG(t.team)} {t.team}{t.is_host?" 🏟️":""}</td>
-                        <td style={{ padding:"7px 10px" }}><span style={{ color:CONTINENT_COLOR[t.continent]||C.white, fontWeight:600, fontSize:11 }}>{t.continent}</span></td>
+                        <td style={{ padding:"7px 10px", fontWeight:700 }}>{FLAG(t.team)} {T(t.team)}{t.is_host?" 🏟️":""}</td>
+                        <td style={{ padding:"7px 10px" }}><span style={{ color:CONTINENT_COLOR[t.continent]||C.white, fontWeight:600, fontSize:11 }}>{TC(t.continent)}</span></td>
                         <td style={{ padding:"7px 10px", color:t.fifa_rank<=5?C.gold:C.white, fontWeight:t.fifa_rank<=5?800:400 }}>#{t.fifa_rank}</td>
                         <td style={{ padding:"7px 10px", color:C.muted }}>{t.fifa_pts.toFixed(0)}</td>
                         <td style={{ padding:"7px 10px", color:C.accent }}>{t.wins}</td>
@@ -685,11 +712,11 @@ export default function WorldCupBI() {
           const ageDist = [...TEST_2026]
             .sort((a,b)=>a.fifa_rank-b.fifa_rank)
             .slice(0,15)
-            .map(t=>({ name:`${FLAG(t.team)} ${t.team}`, idade:t.avg_age, rank:t.fifa_rank }));
+            .map(t=>({ name:`${FLAG(t.team)} ${T(t.team)}`, idade:t.avg_age, rank:t.fifa_rank }));
 
           // Valor de elenco vs aproveitamento (scatter)
           const scatterData = TEST_2026.slice(0,20).map(t=>({
-            name: `${FLAG(t.team)} ${t.team}`,
+            name: `${FLAG(t.team)} ${T(t.team)}`,
             valor: Math.round(t.market_value/10)*10,
             aprov: +((t.wins/(t.wins+t.losses+t.draws))*100).toFixed(1),
             rank: t.fifa_rank,
@@ -767,7 +794,7 @@ export default function WorldCupBI() {
                       <div key={t.team} style={{ display:"flex", alignItems:"center", gap:10, background:i===0?"#001a00":C.panelAlt, borderRadius:8, padding:"8px 12px", border:`1px solid ${i===0?C.greenLight:C.border}` }}>
                         <span style={{ fontSize:22, minWidth:30, textAlign:"center" }}>{FLAG(t.team)}</span>
                         <div style={{ flex:1 }}>
-                          <div style={{ fontWeight:700, fontSize:13 }}>{t.team} <span style={{ color:C.muted, fontSize:11, fontWeight:400 }}>#{t.fifa_rank} FIFA</span></div>
+                          <div style={{ fontWeight:700, fontSize:13 }}>{T(t.team)} <span style={{ color:C.muted, fontSize:11, fontWeight:400 }}>#{t.fifa_rank} FIFA</span></div>
                           <div style={{ display:"flex", gap:10, marginTop:3 }}>
                             <span style={{ color:C.accent, fontSize:11 }}>{t.wins}V · {t.losses}D</span>
                             <span style={{ color:C.gold, fontSize:11 }}>Saldo: +{t.saldo > 0 ? t.saldo : 0}</span>
@@ -790,7 +817,7 @@ export default function WorldCupBI() {
                       <div key={t.team} style={{ display:"flex", alignItems:"center", gap:10, background:i===0?"#1a0000":C.panelAlt, borderRadius:8, padding:"8px 12px", border:`1px solid ${i===0?C.red+"55":C.border}` }}>
                         <span style={{ fontSize:22, minWidth:30, textAlign:"center" }}>{FLAG(t.team)}</span>
                         <div style={{ flex:1 }}>
-                          <div style={{ fontWeight:700, fontSize:13 }}>{t.team} <span style={{ color:C.muted, fontSize:11, fontWeight:400 }}>#{t.fifa_rank} FIFA</span></div>
+                          <div style={{ fontWeight:700, fontSize:13 }}>{T(t.team)} <span style={{ color:C.muted, fontSize:11, fontWeight:400 }}>#{t.fifa_rank} FIFA</span></div>
                           <div style={{ display:"flex", gap:10, marginTop:3 }}>
                             <span style={{ color:C.red, fontSize:11 }}>{t.losses} derrotas</span>
                             <span style={{ color:C.muted, fontSize:11 }}>Saldo: {t.saldo}</span>
